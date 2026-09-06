@@ -1,7 +1,13 @@
 const myLibrary = [];
 
+const form = document.getElementById("form");
+
 const btn = document.querySelector("button");
 const star = document.querySelectorAll("span");
+
+const library = document.getElementsByClassName("library")[0];
+
+const card = document.getElementsByClassName("card")[0];
 
 let stars;
 
@@ -25,11 +31,15 @@ function addBook(e){
     let pages = document.getElementById("pages").value;
     let read = document.getElementById("read").checked;
     let notes = document.getElementById("notes").value;
-    let score = stars;   
+    let score = stars;  
 
     const book = new Book(title, author, genre, pages, read, notes, score)
+
     myLibrary.push(book);
     console.log(myLibrary.length);
+
+    form.reset();
+    /*send/call to the html and show it in the card in the library*/
 }
 
 btn.addEventListener("click", addBook);
@@ -86,3 +96,63 @@ function starCheck(){ /*this gives each star the appropriate color and registers
         stars = 5;
     }
 }
+
+
+function createCard(){
+    const clone = card.cloneNode(true);
+    clone.style.visibility = "visible";
+    clone.style.display ="flex";
+    clone.querySelector("#close-button").addEventListener("click", deleteCard);
+    library.appendChild(clone);
+
+    loadCard();
+}
+
+
+function deleteCard(){/* delete parent's parent and remove from array*/
+    const cardDeleted = this.parentNode.parentNode;
+    const titleDeleted = cardDeleted.querySelector("#title");
+    
+    myLibrary.forEach((entry, index) => {
+        if(entry.title === titleDeleted.innerHTML){
+            myLibrary.splice(index, 1);
+        }
+    });
+
+    cardDeleted.remove();
+    console.log(myLibrary.length);
+}
+
+btn.addEventListener("click", createCard);
+
+function loadCard(){
+    const emptyCard = library.lastChild;
+    const lastEntry = myLibrary.at(-1);
+
+    let emptyTitle = emptyCard.querySelector("#title");
+    let emptyAuthor = emptyCard.querySelector("#author");
+    let emptyGenre= emptyCard.querySelector("#genre");
+    let emptyPages = emptyCard.querySelector("#pages");
+    let emptyNotes = emptyCard.querySelector("#notes");
+    let emptyRead = emptyCard.querySelector("#read");
+    let emptyScore = emptyCard.querySelector("#score")
+
+    emptyTitle.innerHTML = lastEntry.title;
+    emptyAuthor.innerHTML = lastEntry.author;
+    emptyGenre.innerHTML = lastEntry.genre;
+    emptyPages.innerHTML = lastEntry.pages;
+    emptyNotes.innerHTML = lastEntry.notes;
+
+    if(lastEntry.read==true){
+        emptyRead.innerHTML = "Read";
+    }
+    else{
+        emptyRead.innerHTML = "Not read";
+    }
+
+    emptyScore.innerHTML = lastEntry.score;
+}
+
+
+
+/*didn't do this: when generating card; add a star for each number in score*/
